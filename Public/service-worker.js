@@ -18,3 +18,11 @@ const App_Prefix = "Budget-Tracker-";
 const Version = "version_01";
 const CACHE_NAME = App_Prefix + Version;
 
+self.addEventListener('install', (evt) => {
+    evt.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(FILES_TO_CACHE);
+        })
+    );
+    self.skipWaiting();
+})
