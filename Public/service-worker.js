@@ -18,8 +18,8 @@ const App_Prefix = "Budget-Tracker-";
 const Version = "version_01";
 const CACHE_NAME = App_Prefix + Version;
 
-self.addEventListener('install', (evt) => {
-    evt.waitUntil(
+self.addEventListener('install', (e) => {
+    e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(FILES_TO_CACHE);
         })
@@ -27,6 +27,7 @@ self.addEventListener('install', (evt) => {
     self.skipWaiting();
 });
 
+// need to learn how to make it use => instead
 self.addEventListener('activate', function (e) {
     e.waitUntil(
         caches.keys().then(function (keyList) {
@@ -41,6 +42,22 @@ self.addEventListener('activate', function (e) {
                     return caches.delete(keyList[i]);
                 }
             }));
+        })
+    )
+});
+
+//also needs the =>
+self.addEventListener('fetch', function (e) {
+    console.log('fetch request : ' + e.request.url);
+    e.respondWith(
+        caches.match(e.request).then(function (request) {
+            if (request) { 
+                console.log('responding with cache : ' + e.request.url);
+                return request
+            } else { 
+                console.log('file is not cached, fetching : ' + e.request.url);
+                return fetch(e.request)
+            }
         })
     )
 });
